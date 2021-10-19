@@ -153,9 +153,9 @@ def check_login(username, password):
         # Fill in the SQL below in a manner similar to Wk 08 Lab to log the user in #
         #############################################################################
 
-        sql = """
-        
-        
+        sql = """SELECT *
+                 FROM mediaserver.useraccount
+                 WHERE username=%s AND password=%s
         """
         print(username)
         print(password)
@@ -232,9 +232,10 @@ def user_playlists(username):
         ###############################################################################
         # Fill in the SQL below and make sure you get all the playlists for this user #
         ###############################################################################
-        sql = """
-        
-        """
+        sql = """SELECT collection_id, collection_name, COUNT(*)
+                 FROM mediaserver.mediacollection NATURAL JOIN mediaserver.mediacollectioncontents
+                 GROUP BY collection_id, collection_name
+                 HAVING username=%s"""
 
 
         print("username is: "+username)
@@ -274,8 +275,9 @@ def user_podcast_subscriptions(username):
         # Fill in the SQL below and get all the podcasts that the user is subscribed to #
         #################################################################################
 
-        sql = """
-        """
+        sql = """SELECT podcast_id, podcast_title, podcast_uri, podcast_last_updated
+                 FROM mediaserver.subscribed_podcasts NATURAL JOIN mediaserver.podcast
+                 WHERE username=%s"""
 
 
         r = dictfetchall(cur,sql,(username,))
@@ -313,9 +315,9 @@ def user_in_progress_items(username):
         # Fill in the SQL below with a way to find all the in progress items for the user #
         ###################################################################################
 
-        sql = """
-
-        """
+        sql = """SELECT media_id, play_count, progress, storage_location
+FROM mediaserver.usermediaconsumption NATURAL JOIN mediaserver.mediaitem
+where username=%s"""
 
         r = dictfetchall(cur,sql,(username,))
         print("return val is:")
