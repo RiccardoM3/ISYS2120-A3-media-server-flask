@@ -625,8 +625,12 @@ def get_song(song_id):
         # Fill in the SQL below with a query to get all information about a song    #
         # and the artists that performed it                                         #
         #############################################################################
-        sql = """
-        """
+        sql = """SELECT song_title, string_agg(artist_name, ', ') AS artists, length
+                 FROM (mediaserver.song
+                 NATURAL JOIN mediaserver.song_artists)
+                 JOIN mediaserver.artist ON performing_artist_id=artist_id
+                 GROUP BY song_id, song_title, length
+                HAVING song_id=%s"""
 
         r = dictfetchall(cur,sql,(song_id,))
         print("return val is:")
@@ -664,7 +668,11 @@ def get_song_metadata(song_id):
         # Fill in the SQL below with a query to get all metadata about a song       #
         #############################################################################
 
-        sql = """
+        sql = """SELECT md_value, md_type_name
+        FROM (mediaserver.song JOIN mediaserver.mediaitemmetadata ON song_id=media_id)
+        NATURAL JOIN mediaserver.metadata
+        NATURAL JOIN mediaserver.metadatatype
+        WHERE song_id=%s
         """
 
         r = dictfetchall(cur,sql,(song_id,))
