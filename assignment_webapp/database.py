@@ -513,6 +513,10 @@ def get_alltvshows():
         # Fill in the SQL below with a query to get all tv shows and episode counts #
         #############################################################################
         sql = """
+        SELECT tvshow.tvshow_id, tvshow_title, COUNT(*) FROM tvshow
+        INNER JOIN tvepisode ON tvshow.tvshow_id = tvepisode.tvshow_id
+        GROUP BY tvshow.tvshow_id
+        ORDER BY tvshow_title
         """
 
         r = dictfetchall(cur,sql)
@@ -1066,6 +1070,19 @@ def get_tvshow(tvshow_id):
         # including all relevant metadata       #
         #############################################################################
         sql = """
+            SELECT 
+                tvshow.tvshow_title,
+                CASE
+                    WHEN metadata.md_type_id = 2 THEN 'film genre'
+                    WHEN metadata.md_type_id = 3 THEN 'artwork'
+                    WHEN metadata.md_type_id = 4 THEN 'description'
+                END AS "md_type_name",
+                md_value
+            FROM tvshow
+            INNER JOIN tvshowmetadata ON tvshow.tvshow_id = tvshowmetadata.tvshow_id
+            INNER JOIN metadata USING (md_id)
+            WHERE tvshow.tvshow_id = %s
+            ORDER BY md_type_id, md_value
         """
 
         r = dictfetchall(cur,sql,(tvshow_id,))
@@ -1098,7 +1115,7 @@ def get_all_tvshoweps_for_tvshow(tvshow_id):
     cur = conn.cursor()
     try:
         #########
-        # TODO  #  
+        # TODO  #
         #########
 
         #############################################################################
@@ -1106,6 +1123,10 @@ def get_all_tvshoweps_for_tvshow(tvshow_id):
         # tv episodes in a tv show                                                  #
         #############################################################################
         sql = """
+            SELECT media_id, tvshow_episode_title, season, episode, air_date FROM tvshow
+            INNER JOIN tvepisode USING (tvshow_id)
+            WHERE tvshow_id = %s
+            ORDER BY season, episode
         """
 
         r = dictfetchall(cur,sql,(tvshow_id,))
