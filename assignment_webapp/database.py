@@ -1072,15 +1072,12 @@ def get_tvshow(tvshow_id):
         sql = """
             SELECT 
                 tvshow.tvshow_title,
-                CASE
-                    WHEN metadata.md_type_id = 2 THEN 'film genre'
-                    WHEN metadata.md_type_id = 3 THEN 'artwork'
-                    WHEN metadata.md_type_id = 4 THEN 'description'
-                END AS "md_type_name",
+                md_type_name,
                 md_value
             FROM tvshow
             INNER JOIN tvshowmetadata ON tvshow.tvshow_id = tvshowmetadata.tvshow_id
             INNER JOIN metadata USING (md_id)
+            INNER JOIN metadatatype USING (md_type_id)
             WHERE tvshow.tvshow_id = %s
             ORDER BY md_type_id, md_value
         """
