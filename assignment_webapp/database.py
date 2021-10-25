@@ -505,10 +505,6 @@ def get_alltvshows():
         return None
     cur = conn.cursor()
     try:
-        #########
-        # TODO  #  
-        #########
-
         #############################################################################
         # Fill in the SQL below with a query to get all tv shows and episode counts #
         #############################################################################
@@ -516,7 +512,7 @@ def get_alltvshows():
         SELECT tvshow.tvshow_id, tvshow_title, COUNT(*) FROM tvshow
         INNER JOIN tvepisode ON tvshow.tvshow_id = tvepisode.tvshow_id
         GROUP BY tvshow.tvshow_id
-        ORDER BY tvshow_title
+        ORDER BY tvshow.tvshow_id
         """
 
         r = dictfetchall(cur,sql)
@@ -1020,18 +1016,36 @@ def get_genre_movies_and_shows(genre_id):
         return None
     cur = conn.cursor()
     try:
-        #########
-        # TODO  #  
-        #########
 
         #############################################################################
         # Fill in the SQL below with a query to get all information about all       #
         # movies and tv shows which belong to a particular genre_id                 #
         #############################################################################
         sql = """
+            (SELECT 
+                tvshow_id AS "id",
+                tvshow_title AS "title",
+                'TV Show' AS "type"
+            FROM tvshow
+            INNER JOIN tvshowmetadata USING (tvshow_id)
+            INNER JOIN metadata USING (md_id)
+            INNER JOIN metadatatype USING (md_type_id)
+            WHERE md_type_name = 'film genre'
+            AND md_id = %s)
+            UNION
+            (SELECT
+                movie_id AS "id",
+                movie_title AS "title",
+                'Movie' AS "type"
+            FROM movie
+            INNER JOIN mediaitemmetadata ON (movie.movie_id = mediaitemmetadata.media_id)
+            INNER JOIN metadata USING (md_id)
+            INNER JOIN metadatatype USING (md_type_id)
+            WHERE md_type_name = 'film genre'
+            AND md_id = %s)
         """
 
-        r = dictfetchall(cur,sql,(genre_id,))
+        r = dictfetchall(cur,sql,(genre_id,genre_id))
         print("return val is:")
         print(r)
         cur.close()                     # Close the cursor
@@ -1061,10 +1075,6 @@ def get_tvshow(tvshow_id):
         return None
     cur = conn.cursor()
     try:
-        #########
-        # TODO  #  
-        #########
-
         #############################################################################
         # Fill in the SQL below with a query to get all information about a tv show #
         # including all relevant metadata       #
@@ -1072,6 +1082,7 @@ def get_tvshow(tvshow_id):
         sql = """
             SELECT 
                 tvshow.tvshow_title,
+                md_id,
                 md_type_name,
                 md_value
             FROM tvshow
@@ -1382,6 +1393,42 @@ def get_last_movie():
     conn.close()                    # Close the connection to the db
     return None
 
+
+def get_type_of_genre(genre_id):
+    """
+    Get the genre type name, or None if an invalid genre
+    """
+
+    conn = database_connect()
+    if(conn is None):
+        return None
+    cur = conn.cursor()
+    try:
+        # Try executing the SQL and get from the database
+        sql = """
+        SELECT md_type_name
+        FROM metadata
+        INNER JOIN metadatatype USING (md_type_id)
+        WHERE md_id = %s
+        AND md_type_name IN ('film genre', 'song genre', 'podcast genre')
+        """
+
+        r = dictfetchone(cur,sql, (genre_id,))
+        cur.close()                     # Close the cursor
+        conn.close()                    # Close the connection to the db
+
+        if len(r) > 0:
+            return r[0]['md_type_name']
+        else:
+            return None
+        
+    except:
+        # If there were any errors, return a NULL row printing an error to the debug
+        print("Unexpected error adding a movie:", sys.exc_info()[0])
+        raise
+    cur.close()                     # Close the cursor
+    conn.close()                    # Close the connection to the db
+    return None
 
 #  FOR MARKING PURPOSES ONLY
 #  DO NOT CHANGE

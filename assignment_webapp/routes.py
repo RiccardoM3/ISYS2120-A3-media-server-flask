@@ -636,20 +636,46 @@ def single_genre(genre_id):
     # Fill in the Function below with to do all data handling for a genre       #
     #############################################################################
 
-    page['title'] = '' # Add the title
+    page['title'] = 'Individual Genre' # Add the title
 
     # Identify the type of genre - you may need to add a new function to database.py to do this
-
+    genre = database.get_type_of_genre(genre_id)
+    
     # Set up some variables to manage the returns from the database functions
     #   There are some function frameworks provided for you to do this.
-    
+    media_items = []
+    if genre == 'song genre':
+        media_items = database.get_genre_songs(genre_id)
+    elif genre == 'film genre':
+        media_items = database.get_genre_movies_and_shows(genre_id)
+    elif genre == 'postcast genre':
+        media_items = database.get_genre_podcasts(genre_id)
+    else:
+        #invalid genre
+        page['bar'] = False
+        flash("Invalid genre, please try again")
+        return render_template('singleitems/genre.html',
+                           session=session,
+                           page=page,
+                           user=user_details,
+                           media_items=media_items)
+
     # Once retrieved, do some data integrity checks on the data
+    # Data integrity checks
+    if media_items == None or media_items == []:
+        media_items = []
+        page['bar'] = False
+        flash("No matching tv shows found, please try again")
+    else:
+        page['bar'] = True
+        flash('Found '+str(len(media_items))+' results!')
 
     # NOTE :: YOU WILL NEED TO MODIFY THIS TO PASS THE APPROPRIATE VARIABLES
     return render_template('singleitems/genre.html',
                            session=session,
                            page=page,
-                           user=user_details)
+                           user=user_details,
+                           media_items=media_items)
 
 
 #####################################################

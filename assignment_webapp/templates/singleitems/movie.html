@@ -21,14 +21,14 @@
                     </div>
                 {% endif %}
             {% endfor %}
-            <!-- TODO - Query (10)
-            You will have to modify the approach below slightly to make each genre clickable
-            -->
             <h3> Genres </h3>
             {% for instance in movie %}
                 {% if instance.md_type_name == 'film genre' %}
-                        {{instance.md_value}}
-                        <br/>
+                    <div>
+                        <a href="{{url_for('single_genre', genre_id=instance.md_id)}}">
+                            {{instance.md_value}}
+                        </a>
+                    </div>
                 {% endif %}
             {% endfor %}
         {% else %}
