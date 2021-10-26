@@ -947,11 +947,11 @@ def get_album_genres(album_id):
         #############################################################################
         sql = """
         SELECT DISTINCT md_value
-        FROM album a
-        	INNER JOIN album_songs s ON(a.album_id = s.album_id)
-        	INNER JOIN audiomedia am ON(am.media_id = s.song_id)
-        	INNER JOIN mediaitemmetadata mid ON(mid.media_id = am.media_id)
-        	INNER JOIN metadata m ON(m.md_id = mid.md_id)
+        FROM mediaserver.album a
+        	INNER JOIN mediaserver.album_songs s ON(a.album_id = s.album_id)
+        	INNER JOIN mediaserver.audiomedia am ON(am.media_id = s.song_id)
+        	INNER JOIN mediaserver.mediaitemmetadata mid ON(mid.media_id = am.media_id)
+        	INNER JOIN mediaserver.metadata m ON(m.md_id = mid.md_id)
         WHERE md_type_id = 1 and a.album_id = %s
         """
 
