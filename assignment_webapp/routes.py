@@ -648,26 +648,22 @@ def single_genre(genre_id):
     page['title'] = 'Individual Genre' # Add the title
 
     # Identify the type of genre - you may need to add a new function to database.py to do this
-    genre = database.get_type_of_genre(genre_id)
-    
+    (genre_name, genre_type) = database.get_genre_info(genre_id)
+
     # Set up some variables to manage the returns from the database functions
     #   There are some function frameworks provided for you to do this.
     media_items = []
-    if genre == 'song genre':
+    if genre_type == 'song genre':
         media_items = database.get_genre_songs(genre_id)
-    elif genre == 'film genre':
+    elif genre_type == 'film genre':
         media_items = database.get_genre_movies_and_shows(genre_id)
-    elif genre == 'postcast genre':
+    elif genre_type == 'postcast genre':
         media_items = database.get_genre_podcasts(genre_id)
     else:
         #invalid genre
         page['bar'] = False
         flash("Invalid genre, please try again")
-        return render_template('singleitems/genre.html',
-                           session=session,
-                           page=page,
-                           user=user_details,
-                           media_items=media_items)
+        return render_template('singleitems/genre.html', session=session, page=page, user=user_details, media_items=media_items)
 
     # Once retrieved, do some data integrity checks on the data
     # Data integrity checks
@@ -684,7 +680,9 @@ def single_genre(genre_id):
                            session=session,
                            page=page,
                            user=user_details,
-                           media_items=media_items)
+                           media_items=media_items,
+                           genre_name=genre_name.title(),
+                           genre_type=genre_type.title())
 
 
 #####################################################
