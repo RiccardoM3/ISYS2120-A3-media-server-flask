@@ -420,9 +420,11 @@ def single_podcast(podcast_id):
     # Fill in the Function below with to do all data handling for a podcast     #
     #############################################################################
 
-    page['title'] = '' # Add the title
+    page['title'] = 'Podcast'
 
     # Set up some variables to manage the returns from the database fucntions
+    podcast = None
+    podcast = database.get_podcast(podcast_id)
     
     # Once retrieved, do some data integrity checks on the data
 
