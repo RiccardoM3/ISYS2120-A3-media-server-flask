@@ -1067,12 +1067,6 @@ def get_genre_movies_and_shows(genre_id):
         return None
     cur = conn.cursor()
     try:
-<<<<<<< HEAD
-        #########
-        # TODO  #
-        #########
-=======
->>>>>>> origin/ric
 
         #############################################################################
         # Fill in the SQL below with a query to get all information about all       #
@@ -1132,13 +1126,6 @@ def get_tvshow(tvshow_id):
         return None
     cur = conn.cursor()
     try:
-<<<<<<< HEAD
-        #########
-        # TODO  #
-        #########
-
-=======
->>>>>>> origin/ric
         #############################################################################
         # Fill in the SQL below with a query to get all information about a tv show #
         # including all relevant metadata       #
