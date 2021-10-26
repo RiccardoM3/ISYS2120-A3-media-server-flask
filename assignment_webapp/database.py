@@ -714,10 +714,10 @@ def get_podcast(podcast_id):
         #############################################################################
         sql = """
         SELECT p.podcast_id, p.podcast_title, p.podcast_uri, p.podcast_last_updated,md.md_type_name, m.md_value
-        FROM podcast p
-	       INNER JOIN podcastmetadata pm ON(p.podcast_id = pm.podcast_id)
-	       INNER JOIN metadata m ON(pm.md_id = m.md_id)
-           INNER JOIN metadatatype md ON (m.md_type_id = md.md_type_id)
+        FROM mediaserver.podcast p
+	       INNER JOIN mediaserver.podcastmetadata pm ON(p.podcast_id = pm.podcast_id)
+	       INNER JOIN mediaserver.metadata m ON(pm.md_id = m.md_id)
+           INNER JOIN mediaserver.metadatatype md ON (m.md_type_id = md.md_type_id)
         WHERE p.podcast_id = %s
 
         """
@@ -760,9 +760,9 @@ def get_all_podcasteps_for_podcast(podcast_id):
         #############################################################################
 
         sql = """
-        SELECT pe.podcast_id, pe.podcast_episode_title, pe.podcast_episode_uri, pe.podcast_episode_published_date,pe.podcast_episode_length
-        FROM podcast p
-	       INNER JOIN podcastepisode pe  ON(p.podcast_id = pe.podcast_id)
+        SELECT pe.media_id, pe.podcast_episode_title, pe.podcast_episode_uri, pe.podcast_episode_published_date,pe.podcast_episode_length
+        FROM mediaserver.podcast p
+	       INNER JOIN mediaserver.podcastepisode pe  ON(p.podcast_id = pe.podcast_id)
         WHERE p.podcast_id = %s
         ORDER BY pe.podcast_episode_published_date DESC
 

@@ -425,14 +425,21 @@ def single_podcast(podcast_id):
     # Set up some variables to manage the returns from the database fucntions
     podcast = None
     podcast = database.get_podcast(podcast_id)
-    
+    episodes = None
+    episodes = database.get_all_podcasteps_for_podcast(podcast_id)
     # Once retrieved, do some data integrity checks on the data
+    if podcast is None:
+    	podcast = []
+    if episodes is None:
+    	episodes = []
 
     # NOTE :: YOU WILL NEED TO MODIFY THIS TO PASS THE APPROPRIATE VARIABLES
     return render_template('singleitems/podcast.html',
                            session=session,
                            page=page,
-                           user=user_details)
+                           user=user_details,
+                           podcast=podcast,
+                           episodes=episodes)
 
 #####################################################
 #   Query (7)
