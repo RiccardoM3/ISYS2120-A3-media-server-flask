@@ -153,9 +153,9 @@ def check_login(username, password):
         # Fill in the SQL below in a manner similar to Wk 08 Lab to log the user in #
         #############################################################################
 
-        sql = """
-        
-        
+        sql = """SELECT *
+                 FROM mediaserver.useraccount
+                 WHERE username=%s AND password=%s
         """
         print(username)
         print(password)
@@ -232,9 +232,10 @@ def user_playlists(username):
         ###############################################################################
         # Fill in the SQL below and make sure you get all the playlists for this user #
         ###############################################################################
-        sql = """
-        
-        """
+        sql = """SELECT collection_id, collection_name, COUNT(*)
+                 FROM mediaserver.mediacollection NATURAL JOIN mediaserver.mediacollectioncontents
+                 GROUP BY collection_id, collection_name
+                 HAVING username=%s"""
 
 
         print("username is: "+username)
@@ -274,8 +275,9 @@ def user_podcast_subscriptions(username):
         # Fill in the SQL below and get all the podcasts that the user is subscribed to #
         #################################################################################
 
-        sql = """
-        """
+        sql = """SELECT podcast_id, podcast_title, podcast_uri, podcast_last_updated
+                 FROM mediaserver.subscribed_podcasts NATURAL JOIN mediaserver.podcast
+                 WHERE username=%s"""
 
 
         r = dictfetchall(cur,sql,(username,))
@@ -313,9 +315,9 @@ def user_in_progress_items(username):
         # Fill in the SQL below with a way to find all the in progress items for the user #
         ###################################################################################
 
-        sql = """
-
-        """
+        sql = """SELECT media_id, play_count, progress, storage_location
+FROM mediaserver.usermediaconsumption NATURAL JOIN mediaserver.mediaitem
+where username=%s"""
 
         r = dictfetchall(cur,sql,(username,))
         print("return val is:")
@@ -623,8 +625,12 @@ def get_song(song_id):
         # Fill in the SQL below with a query to get all information about a song    #
         # and the artists that performed it                                         #
         #############################################################################
-        sql = """
-        """
+        sql = """SELECT song_title, string_agg(artist_name, ', ') AS artists, length
+                 FROM (mediaserver.song
+                 NATURAL JOIN mediaserver.song_artists)
+                 JOIN mediaserver.artist ON performing_artist_id=artist_id
+                 GROUP BY song_id, song_title, length
+                HAVING song_id=%s"""
 
         r = dictfetchall(cur,sql,(song_id,))
         print("return val is:")
@@ -662,7 +668,11 @@ def get_song_metadata(song_id):
         # Fill in the SQL below with a query to get all metadata about a song       #
         #############################################################################
 
-        sql = """
+        sql = """SELECT md_value, md_type_name
+        FROM (mediaserver.song JOIN mediaserver.mediaitemmetadata ON song_id=media_id)
+        NATURAL JOIN mediaserver.metadata
+        NATURAL JOIN mediaserver.metadatatype
+        WHERE song_id=%s
         """
 
         r = dictfetchall(cur,sql,(song_id,))
@@ -822,6 +832,9 @@ def get_album(album_id):
         # including all relevant metadata                                           #
         #############################################################################
         sql = """
+	SELECT album_title, md_type_name, md_value
+	FROM mediaserver.album LEFT OUTER JOIN  (mediaserver.albummetadata NATURAL JOIN mediaserver.metadata NATURAL JOIN mediaserver.metadatatype) USING (album_id)
+	where album_id=%s
         """
 
         r = dictfetchall(cur,sql,(album_id,))
@@ -862,6 +875,14 @@ def get_album_songs(album_id):
         # songs in an album, including their artists                                #
         #############################################################################
         sql = """
+        SELECT song_id, song_title, string_agg(DISTINCT (artist_name), ',') AS artists
+FROM mediaserver.album
+    NATURAL JOIN mediaserver.album_songs
+    NATURAL JOIN mediaserver.song
+    NATURAL JOIN mediaserver.song_artists
+    JOIN mediaserver.artist ON song_artists.performing_artist_id = artist.artist_id
+GROUP BY album_id, song_id, song_title
+HAVING album_id=%s
         """
 
         r = dictfetchall(cur,sql,(album_id,))
@@ -902,6 +923,16 @@ def get_album_genres(album_id):
         # genres in an album (based on all the genres of the songs in that album)   #
         #############################################################################
         sql = """
+        SELECT string_agg(DISTINCT (md_value), ',') AS songgenres
+		FROM ((mediaserver.album
+    		NATURAL JOIN mediaserver.album_songs
+    		NATURAL JOIN mediaserver.song)
+    		JOIN mediaserver.audiomedia ON (song_id = audiomedia.media_id))
+    		NATURAL JOIN mediaserver.mediaitem
+    		NATURAL JOIN mediaserver.mediaitemmetadata
+    		NATURAL JOIN mediaserver.metadata
+    		NATURAL JOIN mediaserver.metadatatype
+	GROUP BY album_id, md_type_name HAVING md_type_name = 'song genre'  AND album_id=%s
         """
 
         r = dictfetchall(cur,sql,(album_id,))
