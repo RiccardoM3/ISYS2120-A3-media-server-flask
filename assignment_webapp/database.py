@@ -832,6 +832,9 @@ def get_album(album_id):
         # including all relevant metadata                                           #
         #############################################################################
         sql = """
+	SELECT album_title, md_type_name, md_value
+	FROM mediaserver.album LEFT OUTER JOIN  (mediaserver.albummetadata NATURAL JOIN mediaserver.metadata NATURAL JOIN mediaserver.metadatatype) USING (album_id)
+	where album_id=%s
         """
 
         r = dictfetchall(cur,sql,(album_id,))
@@ -872,6 +875,14 @@ def get_album_songs(album_id):
         # songs in an album, including their artists                                #
         #############################################################################
         sql = """
+        SELECT song_id, song_title, string_agg(DISTINCT (artist_name), ',') AS artists
+FROM mediaserver.album
+    NATURAL JOIN mediaserver.album_songs
+    NATURAL JOIN mediaserver.song
+    NATURAL JOIN mediaserver.song_artists
+    JOIN mediaserver.artist ON song_artists.performing_artist_id = artist.artist_id
+GROUP BY album_id, song_id, song_title
+HAVING album_id=%s
         """
 
         r = dictfetchall(cur,sql,(album_id,))
@@ -912,6 +923,16 @@ def get_album_genres(album_id):
         # genres in an album (based on all the genres of the songs in that album)   #
         #############################################################################
         sql = """
+        SELECT string_agg(DISTINCT (md_value), ',') AS songgenres
+		FROM ((mediaserver.album
+    		NATURAL JOIN mediaserver.album_songs
+    		NATURAL JOIN mediaserver.song)
+    		JOIN mediaserver.audiomedia ON (song_id = audiomedia.media_id))
+    		NATURAL JOIN mediaserver.mediaitem
+    		NATURAL JOIN mediaserver.mediaitemmetadata
+    		NATURAL JOIN mediaserver.metadata
+    		NATURAL JOIN mediaserver.metadatatype
+	GROUP BY album_id, md_type_name HAVING md_type_name = 'song genre'  AND album_id=%s
         """
 
         r = dictfetchall(cur,sql,(album_id,))
