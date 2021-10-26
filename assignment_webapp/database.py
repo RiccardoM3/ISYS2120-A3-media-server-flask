@@ -669,7 +669,7 @@ def get_song_metadata(song_id):
         # Fill in the SQL below with a query to get all metadata about a song       #
         #############################################################################
 
-        sql = """SELECT md_value, md_type_name
+        sql = """SELECT md_id, md_value, md_type_name
         FROM (mediaserver.song JOIN mediaserver.mediaitemmetadata ON song_id=media_id)
         NATURAL JOIN mediaserver.metadata
         NATURAL JOIN mediaserver.metadatatype
@@ -991,15 +991,21 @@ def get_genre_songs(genre_id):
         return None
     cur = conn.cursor()
     try:
-        #########
-        # TODO  #
-        #########
-
         #############################################################################
         # Fill in the SQL below with a query to get all information about all       #
         # songs which belong to a particular genre_id                               #
         #############################################################################
         sql = """
+            SELECT
+                song_id AS "id",
+                song_title AS "title",
+                'Song' AS "type"
+            FROM song
+            INNER JOIN mediaitemmetadata ON (song.song_id = mediaitemmetadata.media_id)
+            INNER JOIN metadata USING (md_id)
+            INNER JOIN metadatatype USING (md_type_id)
+            WHERE md_type_name = 'song genre'
+            AND md_id = %s
         """
 
         r = dictfetchall(cur,sql,(genre_id,))
@@ -1445,7 +1451,7 @@ def get_last_movie():
     return None
 
 
-def get_type_of_genre(genre_id):
+def get_genre_info(genre_id):
     """
     Get the genre type name, or None if an invalid genre
     """
@@ -1457,25 +1463,26 @@ def get_type_of_genre(genre_id):
     try:
         # Try executing the SQL and get from the database
         sql = """
-        SELECT md_type_name
+        SELECT md_value, md_type_name 
         FROM metadata
         INNER JOIN metadatatype USING (md_type_id)
         WHERE md_id = %s
         AND md_type_name IN ('film genre', 'song genre', 'podcast genre')
         """
 
-        r = dictfetchone(cur,sql, (genre_id,))
+        r = dictfetchall(cur,sql, (genre_id,))
         cur.close()                     # Close the cursor
         conn.close()                    # Close the connection to the db
 
-        if len(r) > 0:
-            return r[0]['md_type_name']
+        if r != None and len(r) > 0:
+            genre_info = r[0]
+            return (genre_info['md_value'], genre_info['md_type_name'])
         else:
             return None
         
     except:
         # If there were any errors, return a NULL row printing an error to the debug
-        print("Unexpected error adding a movie:", sys.exc_info()[0])
+        print("Unexpected error searching for genre:", sys.exc_info()[0])
         raise
     cur.close()                     # Close the cursor
     conn.close()                    # Close the connection to the db
