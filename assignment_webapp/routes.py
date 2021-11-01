@@ -6,7 +6,7 @@ time a browser hits each of the paths. This serves as the interaction
 between the browser and the database while rendering the HTML templates
 to be displayed.
 
-You will have to make 
+You will have to make
 """
 
 # Importing the required packages
@@ -55,7 +55,7 @@ def index():
     # Data integrity checks
     if user_playlists == None:
         user_playlists = []
-    
+
     if user_subscribed_podcasts == None:
         user_subscribed_podcasts = []
 
@@ -417,7 +417,7 @@ def single_podcast(podcast_id):
     Can do this without a login
     """
     #########
-    # TODO  #  
+    # TODO  #
     #########
 
     #############################################################################
@@ -456,24 +456,28 @@ def single_podcastep(media_id):
     Can do this without a login
     """
     #########
-    # TODO  #  
+    # TODO  #
     #########
 
     #############################################################################
     # Fill in the Function below with to do all data handling for a podcast ep  #
     #############################################################################
 
-    page['title'] = '' # Add the title
+    page['title'] = 'Podcast Episode' # Add the title
 
     # Set up some variables to manage the returns from the database fucntions
-    
+    podcastep = None
+    podcastep = database.get_podcastep(media_id)
     # Once retrieved, do some data integrity checks on the data
 
+    if podcastep is None:
+        podcastep = []
     # NOTE :: YOU WILL NEED TO MODIFY THIS TO PASS THE APPROPRIATE VARIABLES
     return render_template('singleitems/podcastep.html',
                            session=session,
                            page=page,
-                           user=user_details)
+                           user=user_details,
+                           podcastep=podcastep)
 
 
 #####################################################
@@ -642,7 +646,7 @@ def single_genre(genre_id):
     #     return redirect(url_for('login'))
 
     #########
-    # TODO  #  
+    # TODO  #
     #########
 
     #############################################################################
@@ -746,7 +750,7 @@ def search_movies():
         return redirect(url_for('login'))
 
     #########
-    # TODO  #  
+    # TODO  #
     #########
 
     #############################################################################
@@ -761,7 +765,7 @@ def search_movies():
 
         # Once retrieved, do some data integrity checks on the data
 
-        # Once verified, send the appropriate data to 
+        # Once verified, send the appropriate data to
 
         # NOTE :: YOU WILL NEED TO MODIFY THIS TO PASS THE APPROPRIATE VARIABLES or Go elsewhere
         return render_template('searchitems/search_movies.html',
@@ -834,7 +838,7 @@ def add_movie():
         else:
             newdict['artwork'] = request.form['artwork']
             print("We have a value: ",newdict['artwork'])
-        
+
         print('newdict is:')
         print(newdict)
 
@@ -870,14 +874,14 @@ def add_song():
         return redirect(url_for('login'))
 
     #########
-    # TODO  #  
+    # TODO  #
     #########
 
     #############################################################################
     # Fill in the Function below with to do all data handling for adding a song #
     #############################################################################
 
-    page['title'] = '' # Add the title
+    page['title'] = 'Song Creation' # Add the title
 
     if request.method == 'POST':
         # Set up some variables to manage the post returns

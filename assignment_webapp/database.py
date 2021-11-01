@@ -808,12 +808,12 @@ def get_podcastep(podcastep_id):
         #############################################################################
         sql = """
         SELECT pe.podcast_id, pe.podcast_episode_title, pe.podcast_episode_uri, pe.podcast_episode_published_date,pe.podcast_episode_length,md.md_type_name, m.md_value
-        FROM podcastepisode pe
-        		INNER JOIN audiomedia am ON(am.media_id = pe.media_id)
-        		INNER JOIN mediaitemmetadata mid ON(mid.media_id = am.media_id)
-        		INNER JOIN metadata m ON(mid.md_id = m.md_id)
-        		INNER JOIN metadatatype md ON (m.md_type_id = md.md_type_id)
-        WHERE pe.podcast_id = %s
+        FROM mediaserver.podcastepisode pe
+        		INNER JOIN mediaserver.audiomedia am ON(am.media_id = pe.media_id)
+        		INNER JOIN mediaserver.mediaitemmetadata mid ON(mid.media_id = am.media_id)
+        		INNER JOIN mediaserver.metadata m ON(mid.md_id = m.md_id)
+        		INNER JOIN mediaserver.metadatatype md ON (m.md_type_id = md.md_type_id)
+        WHERE pe.media_id = %s
 
         """
 
@@ -1079,7 +1079,7 @@ def get_genre_movies_and_shows(genre_id):
         # movies and tv shows which belong to a particular genre_id                 #
         #############################################################################
         sql = """
-            (SELECT 
+            (SELECT
                 tvshow_id AS "id",
                 tvshow_title AS "title",
                 'TV Show' AS "type"
@@ -1137,7 +1137,7 @@ def get_tvshow(tvshow_id):
         # including all relevant metadata       #
         #############################################################################
         sql = """
-            SELECT 
+            SELECT
                 mediaserver.tvshow.tvshow_title,
                 md_id,
                 md_type_name,
@@ -1463,7 +1463,7 @@ def get_genre_info(genre_id):
     try:
         # Try executing the SQL and get from the database
         sql = """
-        SELECT md_value, md_type_name 
+        SELECT md_value, md_type_name
         FROM metadata
         INNER JOIN metadatatype USING (md_type_id)
         WHERE md_id = %s
@@ -1479,7 +1479,7 @@ def get_genre_info(genre_id):
             return (genre_info['md_value'], genre_info['md_type_name'])
         else:
             return None
-        
+
     except:
         # If there were any errors, return a NULL row printing an error to the debug
         print("Unexpected error searching for genre:", sys.exc_info()[0])
