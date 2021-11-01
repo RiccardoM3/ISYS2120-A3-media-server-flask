@@ -318,7 +318,7 @@ def user_in_progress_items(username):
 
         sql = """SELECT media_id, play_count, progress, storage_location
 FROM mediaserver.usermediaconsumption NATURAL JOIN mediaserver.mediaitem
-where username=%s"""
+where username=%s AND progress != 100"""
 
         r = dictfetchall(cur,sql,(username,))
         print("return val is:")
@@ -946,7 +946,7 @@ def get_album_genres(album_id):
         # genres in an album (based on all the genres of the songs in that album)   #
         #############################################################################
         sql = """
-        SELECT DISTINCT md_value
+        SELECT DISTINCT md_value AS songgenres
         FROM mediaserver.album a
         	INNER JOIN mediaserver.album_songs s ON(a.album_id = s.album_id)
         	INNER JOIN mediaserver.audiomedia am ON(am.media_id = s.song_id)

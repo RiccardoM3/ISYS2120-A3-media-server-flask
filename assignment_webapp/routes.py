@@ -70,6 +70,10 @@ def index():
                            subpodcasts=user_subscribed_podcasts,
                            usercurrent=user_in_progress_items)
 
+@app.route('/player')
+def player():
+    return render_template('player.html')
+
 #####################################################
 #####################################################
 ####    User Management

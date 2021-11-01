@@ -1,0 +1,18 @@
+{% include 'top.html' %}
+<head>
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/player.css') }}">
+<script src="{{ url_for('static', filename='scripts/player.js') }}"></script>
+<script type="application/javascript"></script>
+</head>
+<body>
+  <figure>
+    <video controls id="video" src="{{ url_for('static', filename='video.mp4') }}"></video>
+    <figcaption>
+      <label id="timer" for="progress" role="timer"></label>
+      <progress id="progress" max="100" value="0">Progress</progress>
+      </figcaotion>
+  </figure>
+</body>
+{% include 'bottom.html' %}
+
