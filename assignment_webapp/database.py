@@ -512,10 +512,10 @@ def get_alltvshows():
         # Fill in the SQL below with a query to get all tv shows and episode counts #
         #############################################################################
         sql = """
-        SELECT tvshow.tvshow_id, tvshow_title, COUNT(*) FROM tvshow
-        INNER JOIN tvepisode ON tvshow.tvshow_id = tvepisode.tvshow_id
-        GROUP BY tvshow.tvshow_id
-        ORDER BY tvshow.tvshow_id
+        SELECT mediaserver.tvshow.tvshow_id, tvshow_title, COUNT(*) FROM mediaserver.tvshow
+        INNER JOIN mediaserver.tvepisode ON mediaserver.tvshow.tvshow_id = mediaserver.tvepisode.tvshow_id
+        GROUP BY mediaserver.tvshow.tvshow_id
+        ORDER BY mediaserver.tvshow.tvshow_id
         """
 
         r = dictfetchall(cur,sql)
@@ -1138,15 +1138,15 @@ def get_tvshow(tvshow_id):
         #############################################################################
         sql = """
             SELECT 
-                tvshow.tvshow_title,
+                mediaserver.tvshow.tvshow_title,
                 md_id,
                 md_type_name,
                 md_value
-            FROM tvshow
-            INNER JOIN tvshowmetadata ON tvshow.tvshow_id = tvshowmetadata.tvshow_id
-            INNER JOIN metadata USING (md_id)
-            INNER JOIN metadatatype USING (md_type_id)
-            WHERE tvshow.tvshow_id = %s
+            FROM mediaserver.tvshow
+            INNER JOIN mediaserver.tvshowmetadata ON mediaserver.tvshow.tvshow_id = mediaserver.tvshowmetadata.tvshow_id
+            INNER JOIN mediaserver.metadata USING (md_id)
+            INNER JOIN mediaserver.metadatatype USING (md_type_id)
+            WHERE mediaserver.tvshow.tvshow_id = %s
             ORDER BY md_type_id, md_value
         """
 
@@ -1188,8 +1188,8 @@ def get_all_tvshoweps_for_tvshow(tvshow_id):
         # tv episodes in a tv show                                                  #
         #############################################################################
         sql = """
-            SELECT media_id, tvshow_episode_title, season, episode, air_date FROM tvshow
-            INNER JOIN tvepisode USING (tvshow_id)
+            SELECT media_id, tvshow_episode_title, season, episode, air_date FROM mediaserver.tvshow
+            INNER JOIN mediaserver.tvepisode USING (tvshow_id)
             WHERE tvshow_id = %s
             ORDER BY season, episode
         """

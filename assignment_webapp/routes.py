@@ -561,9 +561,9 @@ def single_tvshow(tvshow_id):
     Show a single tvshows and its eps in your media server
     Can do this without a login
     """
-    # # Check if the user is logged in, if not: back to login.
-    # if('logged_in' not in session or not session['logged_in']):
-    #     return redirect(url_for('login'))
+    # Check if the user is logged in, if not: back to login.
+    if('logged_in' not in session or not session['logged_in']):
+         return redirect(url_for('login'))
 
     page['title'] = 'TV Show'
 
