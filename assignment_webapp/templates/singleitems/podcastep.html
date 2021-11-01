@@ -4,9 +4,50 @@
         <!-- TODO Query (7)
         Display All Relevant Podcast Episode Infromation including meta data
         -->
+        {% if podcastep | length > 0 %}
+            <h2 class="title"> {{podcastep[0].podcast_episode_title}}</h2>
+            <hr/>
+            <h3> Podcast ID: {{podcastep[0].podcast_id}}</h3>
+            <br/>
+            <h3> Podcast Episode URI: {{podcastep[0].podcast_episode_uri}}</h3>
+            <br/>
+            <h3> Podcast Episode Published Date: {{podcastep[0].podcast_episode_published_date}}</h3>
+            <br/>
+            <h3> Podcast Episode Length: {{podcastep[0].podcast_episode_length}}</h3>
+            <br/>
+            <h3> Artworks </h3>
+            {% for instance in podcastep %}
+                {% if instance.md_type_name == 'artwork' %}
+                    <img src="{{instance.md_value}}" alt="image">
+                    <br/>© Spotify Public Domain 2019.
+                {% endif %}
+            {% endfor %}
+            <br/>
+            <h3> Descriptions </h3>
+            {% for instance in podcastep %}
+                {% if instance.md_type_name == 'description' %}
+                    <div>
+                        {{instance.md_value}}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <br/>
         <!-- TODO - Query (10)
         You will have to modify the above approach slightly to make each genre clickable
         -->
+        <h3> Genres </h3>
+        {% for instance in podcastep %}
+            {% if instance.md_type_name == 'podcast genre' %}
+                <div>
+                    <a href="{{url_for('podcast_genre', genre_id=instance.md_id)}}">
+                        {{instance.md_value}}
+                    </a>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <h2 class="title"> Invalid Podcast_episode ID</h2>
+    {% endif %}
     </div>
 </div>
 {% include 'bottom.html'%}
