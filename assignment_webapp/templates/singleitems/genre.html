@@ -22,7 +22,7 @@
                     {% elif media_item.type == 'Song' %}
                     <tr class="clickable-tr" data-href="{{url_for('single_song', song_id=media_item.id)}}">
                     {% elif media_item.type == 'Podcast' %}
-                    <tr class="clickable-tr" data-href="{{url_for('single_podcast', postcast_id=media_item.id)}}">
+                    <tr class="clickable-tr" data-href="{{url_for('single_podcast', podcast_id=media_item.id)}}">
                     {% else %}
                     <tr>
                     {% endif %}

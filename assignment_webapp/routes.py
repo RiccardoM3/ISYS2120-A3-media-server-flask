@@ -566,8 +566,8 @@ def single_tvshow(tvshow_id):
     Can do this without a login
     """
     # Check if the user is logged in, if not: back to login.
-    if('logged_in' not in session or not session['logged_in']):
-         return redirect(url_for('login'))
+    # if('logged_in' not in session or not session['logged_in']):
+    #      return redirect(url_for('login'))
 
     page['title'] = 'TV Show'
 
@@ -645,10 +645,6 @@ def single_genre(genre_id):
     # if('logged_in' not in session or not session['logged_in']):
     #     return redirect(url_for('login'))
 
-    #########
-    # TODO  #
-    #########
-
     #############################################################################
     # Fill in the Function below with to do all data handling for a genre       #
     #############################################################################
@@ -665,7 +661,7 @@ def single_genre(genre_id):
         media_items = database.get_genre_songs(genre_id)
     elif genre_type == 'film genre':
         media_items = database.get_genre_movies_and_shows(genre_id)
-    elif genre_type == 'postcast genre':
+    elif genre_type == 'podcast genre':
         media_items = database.get_genre_podcasts(genre_id)
     else:
         #invalid genre

@@ -1000,10 +1000,10 @@ def get_genre_songs(genre_id):
                 song_id AS "id",
                 song_title AS "title",
                 'Song' AS "type"
-            FROM song
-            INNER JOIN mediaitemmetadata ON (song.song_id = mediaitemmetadata.media_id)
-            INNER JOIN metadata USING (md_id)
-            INNER JOIN metadatatype USING (md_type_id)
+            FROM mediaserver.song
+            INNER JOIN mediaserver.mediaitemmetadata ON (song.song_id = mediaitemmetadata.media_id)
+            INNER JOIN mediaserver.metadata USING (md_id)
+            INNER JOIN mediaserver.metadatatype USING (md_type_id)
             WHERE md_type_name = 'song genre'
             AND md_id = %s
         """
@@ -1035,15 +1035,22 @@ def get_genre_podcasts(genre_id):
         return None
     cur = conn.cursor()
     try:
-        #########
-        # TODO  #
-        #########
 
         #############################################################################
         # Fill in the SQL below with a query to get all information about all       #
         # podcasts which belong to a particular genre_id                            #
         #############################################################################
         sql = """
+            SELECT
+                podcast_id AS "id",
+                podcast_title AS "title",
+                'Podcast' AS "type"
+            FROM mediaserver.podcast
+            INNER JOIN mediaserver.podcastmetadata USING (podcast_id)
+            INNER JOIN mediaserver.metadata USING (md_id)
+            INNER JOIN mediaserver.metadatatype USING (md_type_id)
+            WHERE md_type_name = 'podcast genre'
+            AND md_id = %s
         """
 
         r = dictfetchall(cur,sql,(genre_id,))
@@ -1083,10 +1090,10 @@ def get_genre_movies_and_shows(genre_id):
                 tvshow_id AS "id",
                 tvshow_title AS "title",
                 'TV Show' AS "type"
-            FROM tvshow
-            INNER JOIN tvshowmetadata USING (tvshow_id)
-            INNER JOIN metadata USING (md_id)
-            INNER JOIN metadatatype USING (md_type_id)
+            FROM mediaserver.tvshow
+            INNER JOIN mediaserver.tvshowmetadata USING (tvshow_id)
+            INNER JOIN mediaserver.metadata USING (md_id)
+            INNER JOIN mediaserver.metadatatype USING (md_type_id)
             WHERE md_type_name = 'film genre'
             AND md_id = %s)
             UNION
@@ -1094,10 +1101,10 @@ def get_genre_movies_and_shows(genre_id):
                 movie_id AS "id",
                 movie_title AS "title",
                 'Movie' AS "type"
-            FROM movie
-            INNER JOIN mediaitemmetadata ON (movie.movie_id = mediaitemmetadata.media_id)
-            INNER JOIN metadata USING (md_id)
-            INNER JOIN metadatatype USING (md_type_id)
+            FROM mediaserver.movie
+            INNER JOIN mediaserver.mediaitemmetadata ON (movie.movie_id = mediaitemmetadata.media_id)
+            INNER JOIN mediaserver.metadata USING (md_id)
+            INNER JOIN mediaserver.metadatatype USING (md_type_id)
             WHERE md_type_name = 'film genre'
             AND md_id = %s)
         """
@@ -1478,7 +1485,7 @@ def get_genre_info(genre_id):
             genre_info = r[0]
             return (genre_info['md_value'], genre_info['md_type_name'])
         else:
-            return None
+            return (None, None)
 
     except:
         # If there were any errors, return a NULL row printing an error to the debug
