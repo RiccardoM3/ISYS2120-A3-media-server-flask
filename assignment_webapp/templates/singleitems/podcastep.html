@@ -39,7 +39,7 @@
         {% for instance in podcastep %}
             {% if instance.md_type_name == 'podcast genre' %}
                 <div>
-                    <a href="{{url_for('podcast_genre', genre_id=instance.md_id)}}">
+                    <a href="{{url_for('single_genre', genre_id=instance.md_id)}}">
                         {{instance.md_value}}
                     </a>
                 </div>
