@@ -30,6 +30,16 @@
                     </div>
                 {% endif %}
             {% endfor %}
+            <h3> Genres </h3>
+            {% for instance in podcast %}
+                {% if instance.md_type_name == 'podcast genre' %}
+                    <div>
+                        <a href="{{url_for('single_genre', genre_id=instance.md_id)}}">
+                            {{instance.md_value}}
+                        </a>
+                    </div>
+                {% endif %}
+            {% endfor %}
             <br/>
         {% endif %}
         <!-- TODO - Query (10)
@@ -52,8 +62,7 @@
                         {% for instance in episodes %}
                         <!-- Each row is a link to each individual song page -->
                         <tr class="clickable-tr" data-href="{{ url_for('single_podcastep', media_id=instance.media_id)}}">
-                            <td style="text-align: center">{{ instance.podcast_id }}</td>
-                            <td>{{instance.media_id}}</td>
+                            <td style="text-align: center">{{ instance.media_id }}</td>
                             <td>{{instance.podcast_episode_title}}</td>
                             <td>{{instance.podcast_episode_uri}}</td>
                             <td>{{instance.podcast_episode_published_date}}</td>

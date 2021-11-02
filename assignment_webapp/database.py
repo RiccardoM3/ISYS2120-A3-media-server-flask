@@ -713,7 +713,7 @@ def get_podcast(podcast_id):
         # including all metadata associated with it                                 #
         #############################################################################
         sql = """
-        SELECT p.podcast_id, p.podcast_title, p.podcast_uri, p.podcast_last_updated,md.md_type_name, m.md_value
+        SELECT p.podcast_id, p.podcast_title, p.podcast_uri, p.podcast_last_updated,md.md_type_name, m.md_value, m.md_id
         FROM mediaserver.podcast p
 	       INNER JOIN mediaserver.podcastmetadata pm ON(p.podcast_id = pm.podcast_id)
 	       INNER JOIN mediaserver.metadata m ON(pm.md_id = m.md_id)
