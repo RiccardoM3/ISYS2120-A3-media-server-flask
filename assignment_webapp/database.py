@@ -1352,7 +1352,20 @@ def find_matchingmovies(searchterm):
         # that match a given search term                                            #
         #############################################################################
         sql = """
-        """
+                    SELECT
+                      *
+                    FROM
+                      mediaserver.movie m
+                    LEFT OUTER JOIN (mediaserver.mediaitemmetadata NATURAL
+                      JOIN
+                        mediaserver.metadata NATURAL
+                      JOIN
+                        mediaserver.MetaDataType) mmd
+                    ON
+                      (m.movie_id=mmd.media_id)
+                    WHERE
+                      lower(m.movie_title) ~ lower(%s)
+                """
 
         r = dictfetchall(cur,sql,(searchterm,))
         print("return val is:")
@@ -1362,7 +1375,7 @@ def find_matchingmovies(searchterm):
         return r
     except:
         # If there were any errors, return a NULL row printing an error to the debug
-        print("Unexpected error getting All TV Shows:", sys.exc_info()[0])
+        print("Unexpected error getting movies!:", sys.exc_info()[0])
         raise
     cur.close()                     # Close the cursor
     conn.close()                    # Close the connection to the db
