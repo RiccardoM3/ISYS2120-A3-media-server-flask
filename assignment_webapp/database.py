@@ -807,7 +807,7 @@ def get_podcastep(podcastep_id):
         # podcast episodes and it's associated metadata                             #
         #############################################################################
         sql = """
-        SELECT pe.podcast_id, pe.podcast_episode_title, pe.podcast_episode_uri, pe.podcast_episode_published_date,pe.podcast_episode_length,md.md_type_name, m.md_value
+        SELECT pe.podcast_id, pe.media_id, pe.podcast_episode_title, pe.podcast_episode_uri, pe.podcast_episode_published_date,pe.podcast_episode_length,md.md_type_name, m.md_value
         FROM mediaserver.podcastepisode pe
         		INNER JOIN mediaserver.audiomedia am ON(am.media_id = pe.media_id)
         		INNER JOIN mediaserver.mediaitemmetadata mid ON(mid.media_id = am.media_id)
@@ -1532,6 +1532,40 @@ def get_genre_info(genre_id):
     cur.close()                     # Close the cursor
     conn.close()                    # Close the connection to the db
     return None
+
+
+def get_progress(media_id, username):
+    conn = database_connect()
+    if(conn is None):
+        return None
+    cur = conn.cursor()
+    try:
+        sql = """
+            SELECT media_id, progress
+            FROM mediaserver.usermediaconsumption 
+            NATURAL JOIN mediaserver.mediaitem
+            WHERE username=%s
+            AND media_id = %s
+            AND progress <> 100
+            AND progress <> 0
+        """
+
+        r = dictfetchone(cur,sql,(username, media_id))
+        print("return val is:")
+        print(r)
+        cur.close()                     # Close the cursor
+        conn.close()                    # Close the connection to the db
+        return r
+    except:
+        # If there were any errors, return a NULL row printing an error to the debug
+        print("Unexpected error getting User Consumption - Likely no values:", sys.exc_info()[0])
+    cur.close()                     # Close the cursor
+    conn.close()                    # Close the connection to the db
+    return None
+
+#TODO
+def save_progress(md_id, username, progress):
+    pass
 
 #  FOR MARKING PURPOSES ONLY
 #  DO NOT CHANGE

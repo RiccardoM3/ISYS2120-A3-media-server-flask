@@ -470,14 +470,24 @@ def single_podcastep(media_id):
     podcastep = database.get_podcastep(media_id)
     # Once retrieved, do some data integrity checks on the data
 
+    #if the user is logged in, get the progress info
+    progress_info = None
+    if(podcastep != None and 'logged_in' in session and session['logged_in']):
+        progress_info = database.get_progress(podcastep[0]['media_id'], user_details['username']);
+        if progress_info:
+            progress_info = progress_info[0]
+
     if podcastep is None:
         podcastep = []
+
+    print(progress_info)
     # NOTE :: YOU WILL NEED TO MODIFY THIS TO PASS THE APPROPRIATE VARIABLES
     return render_template('singleitems/podcastep.html',
                            session=session,
                            page=page,
                            user=user_details,
-                           podcastep=podcastep)
+                           podcastep=podcastep,
+                           progress_info=progress_info)
 
 
 #####################################################
