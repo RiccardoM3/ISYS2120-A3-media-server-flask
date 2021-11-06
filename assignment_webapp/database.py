@@ -1422,14 +1422,39 @@ def add_movie_to_db(title,release_year,description,storage_location,genre):
 #   Query (8)
 #   Add a new Song
 #####################################################
-def add_song_to_db(song_params):
+def add_song_to_db(location, songdescription, title, songlength, songgenre, artistid):
     """
     Get all the matching Movies in your media server
     """
     #########
     # TODO  #
     #########
+    conn = database_connect()
+    if(conn is None):
+        return None
+    cur = conn.cursor()
+    try:
+        # Try executing the SQL and get from the database
+        sql = """
+        SELECT
+            mediaserver.addSong(
+                %s,%s,%s,%s,%s,%s);
+        """
 
+        cur.execute(sql,(location, songdescription, title, songlength, songgenre, artistid))
+        conn.commit()                   # Commit the transaction
+        r = cur.fetchone()
+        print("return val is:")
+        print(r)
+        cur.close()                     # Close the cursor
+        conn.close()                    # Close the connection to the db
+        return r
+    except:
+        # If there were any errors, return a NULL row printing an error to the debug
+        print("Unexpected error adding a Song:", sys.exc_info()[0])
+        raise
+    cur.close()                     # Close the cursor
+    conn.close()
     #############################################################################
     # Fill in the Function  with a query and management for how to add a new    #
     # song to your media server. Make sure you manage all constraints           #
