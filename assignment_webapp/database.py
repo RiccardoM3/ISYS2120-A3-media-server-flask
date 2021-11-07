@@ -1353,7 +1353,7 @@ def find_matchingmovies(searchterm):
         #############################################################################
         sql = """
                     SELECT
-                      *
+                      movie_id, movie_title, release_year, md_value
                     FROM
                       mediaserver.movie m
                     LEFT OUTER JOIN (mediaserver.mediaitemmetadata NATURAL
@@ -1364,7 +1364,8 @@ def find_matchingmovies(searchterm):
                     ON
                       (m.movie_id=mmd.media_id)
                     WHERE
-                      lower(m.movie_title) ~ lower(%s)
+                      lower(m.movie_title) ~ lower(%s) AND md_type_name = 'description'
+
                 """
 
         r = dictfetchall(cur,sql,(searchterm,))
