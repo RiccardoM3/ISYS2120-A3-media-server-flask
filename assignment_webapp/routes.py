@@ -470,14 +470,24 @@ def single_podcastep(media_id):
     podcastep = database.get_podcastep(media_id)
     # Once retrieved, do some data integrity checks on the data
 
+    #if the user is logged in, get the progress info
+    progress_info = None
+    if(podcastep != None and 'logged_in' in session and session['logged_in']):
+        progress_info = database.get_progress(podcastep[0]['media_id'], user_details['username']);
+        if progress_info:
+            progress_info = progress_info[0]
+
     if podcastep is None:
         podcastep = []
+
+    print(progress_info)
     # NOTE :: YOU WILL NEED TO MODIFY THIS TO PASS THE APPROPRIATE VARIABLES
     return render_template('singleitems/podcastep.html',
                            session=session,
                            page=page,
                            user=user_details,
-                           podcastep=podcastep)
+                           podcastep=podcastep,
+                           progress_info=progress_info)
 
 
 #####################################################
@@ -880,18 +890,64 @@ def add_song():
 
     page['title'] = 'Song Creation' # Add the title
 
+    songs = None
+    print("request form is:")
+    newdict = {}
+    print(request.form)
+
     if request.method == 'POST':
+        # verify that the values are available:
+        if ('song_title' not in request.form):
+            newdict['song_title'] = 'Empty Song Value'
+        else:
+            newdict['song_title'] = request.form['song_title']
+            print("We have a value: ",newdict['song_title'])
+
+        if ('length' not in request.form):
+            newdict['length'] = '0'
+        else:
+            newdict['length'] = request.form['length']
+            print("We have a value: ",newdict['length'])
+
+        if ('description' not in request.form):
+            newdict['description'] = 'Empty description field'
+        else:
+            newdict['description'] = request.form['description']
+            print("We have a value: ",newdict['description'])
+
+        if ('storage_location' not in request.form):
+            newdict['storage_location'] = 'Empty storage location'
+        else:
+            newdict['storage_location'] = request.form['storage_location']
+            print("We have a value: ",newdict['storage_location'])
+
+        if ('song_genre' not in request.form):
+            newdict['song_genre'] = 'default'
+        else:
+            newdict['song_genre'] = request.form['song_genre']
+            print("We have a value: ",newdict['song_genre'])
+
+        if ('artist_id' not in request.form):
+            newdict['artist_id'] = '1'
+        else:
+            newdict['artist_id'] = request.form['artist_id']
+            print("We have a value: ",newdict['artist_id'])
+
+        print('newdict is:')
+        print(newdict)
+
+        #forward to the database to manage insert
+        songs = database.add_song_to_db(newdict['storage_location'],newdict['description'],newdict['song_title'],newdict['length'],newdict['song_genre'],newdict['artist_id'])
+
         # Set up some variables to manage the post returns
 
         # Once retrieved, do some data integrity checks on the data
-
+        if songs is not None:
+            max_song_id = songs[0]
         # Once verified, send the appropriate data to the database for insertion
 
         # NOTE :: YOU WILL NEED TO MODIFY THIS TO PASS THE APPROPRIATE VARIABLES
-        return render_template('singleitems/song.html',
-                           session=session,
-                           page=page,
-                           user=user_details)
+        return single_song(max_song_id)
     else:
         return render_template('createitems/createsong.html',
                            session=session,

@@ -3,7 +3,7 @@
     <div class="container details">
         <!-- TODO Query (6)  
         Display All Relevant Podcast Infromation including meta data
-        Display All Relevant Podcast Episodes for this Podcast
+        Display All Relevant Podcast Episodes for this Podcast -->
         <!-- Check if We have a valid Podcast -->
         {% if podcast | length > 0 %}
             <h2 class="title"> {{podcast[0].podcast_title}}</h2>
@@ -42,9 +42,7 @@
             {% endfor %}
             <br/>
         {% endif %}
-        <!-- TODO - Query (10)
-        You will have to modify the above approach slightly to make each genre clickable
-        -->
+
                 <!-- Podcast Episodes -->
                 <h3>Episodes for this Podcast</h3>
                 <table class="styled">
