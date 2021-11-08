@@ -1,8 +1,7 @@
-{% if progress_info %}
 {% set username = user['username'] %}
 {% set progress = progress_info['progress'] %}
-{% endif %}
+{% set media_id = progress_info['media_id'] %}
 <div>
-    <{{element or 'video'}} controls id="{{id or 'video'}}" src="{{ url }}" onloadeddata="player.init('{{id or 'video'}}', '{{username or 'null'}}', {{progress or 'null'}}, {{save_interval or '5000'}})"></{{element or 'video'}}>
+    <{{element or 'video'}} controls id="{{id or 'video'}}" src="{{ url }}" onloadeddata="player.init('{{id or 'video'}}', {{media_id or 'null'}}, '{{username or 'null'}}', {{progress or 'null'}}, {{save_interval or '5000'}})"></{{element or 'video'}}>
     <script type="text/javascript" src="{{ url_for('static', filename='scripts/player.js')}}"></script>
 </div>
