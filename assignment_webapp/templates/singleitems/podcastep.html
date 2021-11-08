@@ -14,8 +14,10 @@
             <h3>Player</h3>
             <div>
                 {% set url = podcastep[0].podcast_episode_uri %}
-                {% set element = 'audio' %}
-                {% include('player.html') %}
+                {% if url != None %}
+                    {% set element = 'audio' %}
+                    {% include('player.html') %}
+                {% endif %}
             </div>
             <br>
             <h3> Podcast Episode Published Date: {{podcastep[0].podcast_episode_published_date}}</h3>

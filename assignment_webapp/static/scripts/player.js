@@ -10,14 +10,16 @@ Player = function() {
     };
 
     this.init = function(id, media_id, username, progress, save_interval_time) {
-        console.log(id)
-        console.log(media_id)
-        console.log(username)
-        console.log(progress)
-        console.log(save_interval_time)
-        
+        let alert = document.getElementById('player-alert-'+id)
+
         self.player = document.getElementById(id)
-        if (username !== undefined && username !== null) {
+        if (username !== undefined && username !== null && username != 'null') {
+            if (progress !== undefined && progress !== null && progress != 'null') {
+                alert.innerHTML = "Welcome back " + username +"! Your progress has been restored to your last session."
+            } else {
+                alert.innerHTML = "Welcome " + username +"! Your progress will be saved in case you wish to continue watching later."
+            }
+
             self.progress_info.media_id = media_id;
             self.progress_info.username = username;
             self.progress_info.progress = progress;
@@ -25,6 +27,8 @@ Player = function() {
             self.progress_info.save_progress_interval = setInterval(self.saveProgress, save_interval_time);
 
             self.player.currentTime = (progress / 100) * self.player.duration
+        } else {
+            alert.classList.add("d-none");
         }
     }
 
