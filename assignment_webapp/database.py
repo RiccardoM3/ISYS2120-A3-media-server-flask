@@ -8,6 +8,7 @@ import configparser
 import json
 import sys
 from modules import pg8000
+import re
 
 ################################################################################
 #   Welcome to the database file, where all the query magic happens.
@@ -568,7 +569,66 @@ def get_allmovies():
     conn.close()                    # Close the connection to the db
     return None
 
+def get_valid_artists():
+    """
+    Get valid artists from database
+    """
 
+    conn = database_connect()
+    if(conn is None):
+        return None
+    cur = conn.cursor()
+    try:
+        # Try executing the SQL and get from the database
+        sql = """select *
+        from mediaserver.artist"""
+
+        r = dictfetchall(cur,sql)
+        print("return val is:")
+        print(r)
+        cur.close()                     # Close the cursor
+        conn.close()                    # Close the connection to the db
+        return r
+    except:
+        # If there were any errors, return a NULL row printing an error to the debug
+        print("Unexpected error getting valid artists", sys.exc_info()[0])
+        raise
+    cur.close()                     # Close the cursor
+    conn.close()                    # Close the connection to the db
+    return None
+
+def get_valid_genres():
+    """
+    Get valid genres from database
+    """
+    conn = database_connect()
+    if(conn is None):
+        return None
+    cur = conn.cursor()
+    try:
+        # Try executing the SQL and get from the database
+        sql = """SELECT DISTINCT(md_value) AS song_genre
+                    From mediaserver.song
+                    natural join mediaserver.mediaitem
+                    natural join mediaserver.mediaitemmetadata
+                    natural join mediaserver.metadata
+                    natural join mediaserver.metadatatype
+                    where md_type_id=1;
+                    """
+
+        r = dictfetchall(cur,sql)
+        print("return val is:")
+        print(r)
+        cur.close()                     # Close the cursor
+        conn.close()                    # Close the connection to the db
+        return r
+    except:
+        # If there were any errors, return a NULL row printing an error to the debug
+        print("Unexpected error getting valid genres", sys.exc_info()[0])
+        raise
+    cur.close()                     # Close the cursor
+    conn.close()                    # Close the connection to the db
+    return None
 #####################################################
 #   Get one artist
 #####################################################
@@ -1427,9 +1487,16 @@ def add_song_to_db(location, songdescription, title, songlength, songgenre, arti
     """
     Get all the matching Movies in your media server
     """
-    #########
-    # TODO  #
-    #########
+
+    # Check for valid length input, other inputs are restricted to valid options for the user.
+    # We assume any songdescription,location,title are valid strings.
+    if not songlength.isnumeric():
+        print("song length is not a number")
+        return None
+    if int(songlength) < 0:
+        print("song length is negative")
+        return None
+
     conn = database_connect()
     if(conn is None):
         return None
@@ -1453,7 +1520,7 @@ def add_song_to_db(location, songdescription, title, songlength, songgenre, arti
     except:
         # If there were any errors, return a NULL row printing an error to the debug
         print("Unexpected error adding a Song:", sys.exc_info()[0])
-        raise
+        return None
     cur.close()                     # Close the cursor
     conn.close()
     #############################################################################
@@ -1522,7 +1589,7 @@ def get_genre_info(genre_id):
 
         if r != None and len(r) > 0:
             genre_info = r[0]
-            return (genre_info['md_value'], genre_info['md_type_name'])   
+            return (genre_info['md_value'], genre_info['md_type_name'])
 
     except:
         # If there were any errors, return a NULL row printing an error to the debug
