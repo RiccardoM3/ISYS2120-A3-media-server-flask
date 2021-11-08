@@ -473,9 +473,15 @@ def single_podcastep(media_id):
     #if the user is logged in, get the progress info
     progress_info = None
     if(podcastep != None and 'logged_in' in session and session['logged_in']):
-        progress_info = database.get_progress(podcastep[0]['media_id'], user_details['username']);
-        if progress_info:
-            progress_info = progress_info[0]
+        
+        progress_info = {
+            'media_id' : podcastep[0]['media_id'],
+            'username' : user_details['username']
+        }
+
+        progress_data = database.get_progress(podcastep[0]['media_id'], user_details['username']);
+        if progress_data:
+            progress_info['progress'] = progress_data[0]['progress']
 
     if podcastep is None:
         podcastep = []
@@ -953,3 +959,50 @@ def add_song():
                            session=session,
                            page=page,
                            user=user_details)
+
+#####################################################
+#   Save new progress to the db
+#####################################################
+@app.route('/progress/save', methods=['POST'])
+def save_progress():
+    """
+    Add a new Song
+    """
+    # Check if the user is logged in
+    if('logged_in' not in session or not session['logged_in']):
+        return (jsonify(
+                    error=True,
+                    message= "User not logged in"
+                ), 403)
+
+    if request.method != 'POST':
+        return (jsonify(
+                    error=True,
+                    message= "Method not supported"
+                ), 400)
+
+    # Check that all required elements are in the request 
+    if request.form != None and request.form['username'] != None and request.form['media_id'] != None and request.form['progress'] != None:
+
+        # Check that the logged in user is the same as the one making the request
+        if request.form['username'] != user_details['username']:
+            return (jsonify(
+                    error=True,
+                    message= "You do not have access to this user's progress"
+                ), 403)
+
+        print("HERE1")
+
+        if database.save_progress(request.form['media_id'], request.form['username'], request.form['progress']):
+
+            print("HERE2")
+
+            return (jsonify(
+                    error=False,
+                    message= "Success"
+                ), 200)
+
+    return (jsonify(
+                    error=True,
+                    message= "Unexpected Error Occurred"
+                ), 500)

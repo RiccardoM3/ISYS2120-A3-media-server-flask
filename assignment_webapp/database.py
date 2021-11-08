@@ -1522,9 +1522,7 @@ def get_genre_info(genre_id):
 
         if r != None and len(r) > 0:
             genre_info = r[0]
-            return (genre_info['md_value'], genre_info['md_type_name'])
-        else:
-            return (None, None)
+            return (genre_info['md_value'], genre_info['md_type_name'])   
 
     except:
         # If there were any errors, return a NULL row printing an error to the debug
@@ -1532,7 +1530,7 @@ def get_genre_info(genre_id):
         raise
     cur.close()                     # Close the cursor
     conn.close()                    # Close the connection to the db
-    return None
+    return (None, None)
 
 
 def get_progress(media_id, username):
@@ -1543,8 +1541,7 @@ def get_progress(media_id, username):
     try:
         sql = """
             SELECT media_id, progress
-            FROM mediaserver.usermediaconsumption 
-            NATURAL JOIN mediaserver.mediaitem
+            FROM mediaserver.usermediaconsumption
             WHERE username=%s
             AND media_id = %s
             AND progress <> 100
@@ -1564,9 +1561,60 @@ def get_progress(media_id, username):
     conn.close()                    # Close the connection to the db
     return None
 
-#TODO
-def save_progress(md_id, username, progress):
-    pass
+def save_progress(media_id, username, progress):
+
+    conn = database_connect()
+    if(conn is None):
+        return None
+    cur = conn.cursor()
+
+    current_progress = get_progress(media_id, username)
+    if current_progress != None and len(current_progress) > 0:
+        #update the current entry in the database
+
+        progress = float(progress)*100
+
+        try:
+            sql = """
+                UPDATE mediaserver.usermediaconsumption
+                    SET progress = %s
+                    WHERE username= %s
+                    AND media_id = %s
+            """
+
+            print((progress, username, media_id))
+
+            cur.execute(sql,(progress, username, media_id))
+            conn.commit()
+            cur.close()                     # Close the cursor
+            conn.close()                    # Close the connection to the db
+            return True
+        except:
+            # If there were any errors, return a NULL row printing an error to the debug
+            print("Unexpected error setting User Media Consumption progress", sys.exc_info()[0])
+            cur.close()                     # Close the cursor
+            conn.close()                    # Close the connection to the db
+
+    else:
+        #create a new entry in the database
+        try:
+            sql = """
+                INSERT INTO mediaserver.usermediaconsumption(username, media_id, play_count, progress, lastviewed)
+                    VALUES (%s, %s, 0, %s, CURRENT_DATE)
+            """
+
+            cur.execute(sql,(username, media_id, progress))
+            conn.commit()
+            cur.close()                     # Close the cursor
+            conn.close()                    # Close the connection to the db
+            return True
+        except:
+            # If there were any errors, return a NULL row printing an error to the debug
+            print("Unexpected error create new User Media Consumption", sys.exc_info()[0])
+            cur.close()                     # Close the cursor
+            conn.close()                    # Close the connection to the db
+
+    return False
 
 #  FOR MARKING PURPOSES ONLY
 #  DO NOT CHANGE
