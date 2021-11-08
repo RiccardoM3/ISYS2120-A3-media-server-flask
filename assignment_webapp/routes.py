@@ -473,7 +473,7 @@ def single_podcastep(media_id):
     #if the user is logged in, get the progress info
     progress_info = None
     if(podcastep != None and 'logged_in' in session and session['logged_in']):
-        
+
         progress_info = {
             'media_id' : podcastep[0]['media_id'],
             'username' : user_details['username']
@@ -958,7 +958,7 @@ def add_song():
             print("We have a value: ",newdict['song_genre'])
 
         if ('artist_id' not in request.form):
-            newdict['artist_id'] = '1'
+            newdict['artist_id'] = None
         else:
             newdict['artist_id'] = request.form['artist_id']
             print("We have a value: ",newdict['artist_id'])
@@ -974,15 +974,22 @@ def add_song():
         # Once retrieved, do some data integrity checks on the data
         if songs is not None:
             max_song_id = songs[0]
+        else:
+            flash("Invalid inputs")
+            return redirect(url_for('add_song'))
         # Once verified, send the appropriate data to the database for insertion
 
         # NOTE :: YOU WILL NEED TO MODIFY THIS TO PASS THE APPROPRIATE VARIABLES
         return single_song(max_song_id)
     else:
+        valid_artists = database.get_valid_artists()
+        valid_genres = database.get_valid_genres()
         return render_template('createitems/createsong.html',
                            session=session,
                            page=page,
-                           user=user_details)
+                           user=user_details,
+                           valid_artists=valid_artists,
+                           valid_genres=valid_genres)
 
 #####################################################
 #   Save new progress to the db
@@ -1005,7 +1012,7 @@ def save_progress():
                     message= "Method not supported"
                 ), 400)
 
-    # Check that all required elements are in the request 
+    # Check that all required elements are in the request
     if request.form != None and request.form['username'] != None and request.form['media_id'] != None and request.form['progress'] != None:
 
         # Check that the logged in user is the same as the one making the request
