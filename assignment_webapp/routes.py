@@ -991,12 +991,7 @@ def save_progress():
                     message= "You do not have access to this user's progress"
                 ), 403)
 
-        print("HERE1")
-
         if database.save_progress(request.form['media_id'], request.form['username'], request.form['progress']):
-
-            print("HERE2")
-
             return (jsonify(
                     error=False,
                     message= "Success"

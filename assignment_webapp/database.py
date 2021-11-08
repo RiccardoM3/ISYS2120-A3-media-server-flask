@@ -1561,6 +1561,30 @@ def get_progress(media_id, username):
     conn.close()                    # Close the connection to the db
     return None
 
+def check_if_progress_exists(media_id, username):
+    conn = database_connect()
+    if(conn is None):
+        return None
+    cur = conn.cursor()
+    try:
+        sql = """
+            SELECT media_id, progress
+            FROM mediaserver.usermediaconsumption
+            WHERE username=%s
+            AND media_id = %s
+        """
+
+        r = dictfetchone(cur,sql,(username, media_id))
+        cur.close()                     # Close the cursor
+        conn.close()                    # Close the connection to the db
+        return len(r) > 0
+    except:
+        # If there were any errors, return a NULL row printing an error to the debug
+        print("Unexpected error getting User Consumption - Likely no values:", sys.exc_info()[0])
+    cur.close()                     # Close the cursor
+    conn.close()                    # Close the connection to the db
+    return False
+
 def save_progress(media_id, username, progress):
 
     conn = database_connect()
@@ -1568,12 +1592,10 @@ def save_progress(media_id, username, progress):
         return None
     cur = conn.cursor()
 
-    current_progress = get_progress(media_id, username)
-    if current_progress != None and len(current_progress) > 0:
+    progress = float(progress)*100
+
+    if check_if_progress_exists(media_id, username):
         #update the current entry in the database
-
-        progress = float(progress)*100
-
         try:
             sql = """
                 UPDATE mediaserver.usermediaconsumption

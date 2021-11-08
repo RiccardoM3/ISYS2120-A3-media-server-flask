@@ -2,6 +2,11 @@
 {% set progress = progress_info['progress'] %}
 {% set media_id = progress_info['media_id'] %}
 <div>
-    <{{element or 'video'}} controls id="{{id or 'video'}}" src="{{ url }}" onloadeddata="player.init('{{id or 'video'}}', {{media_id or 'null'}}, '{{username or 'null'}}', {{progress or 'null'}}, {{save_interval or '5000'}})"></{{element or 'video'}}>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/player.css')}}">
     <script type="text/javascript" src="{{ url_for('static', filename='scripts/player.js')}}"></script>
+
+    <div id="player-alert-{{id or 'video'}}" class="player-alert">
+        Player Loading...
+    </div>
+    <{{element or 'video'}} controls id="{{id or 'video'}}" src="{{ url }}" onloadeddata="player.init('{{id or 'video'}}', {{media_id or 'null'}}, '{{username or 'null'}}', {{progress or 'null'}}, {{save_interval or '5000'}})"></{{element or 'video'}}>
 </div>

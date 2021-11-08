@@ -1,0 +1,15 @@
+.player-alert {
+    padding: 12px;
+    margin-bottom: 8px;
+    background: #e0d5f2;
+    border: solid #673AB7 2px;
+    border-radius: 4px;
+}
+
+audio, video {
+    width: 100%;
+}
+
+.d-none {
+    display: none;
+}
