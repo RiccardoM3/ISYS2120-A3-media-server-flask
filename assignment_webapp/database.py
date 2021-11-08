@@ -316,7 +316,7 @@ def user_in_progress_items(username):
         # Fill in the SQL below with a way to find all the in progress items for the user #
         ###################################################################################
 
-        sql = """SELECT media_id, play_count, progress, storage_location
+        sql = """SELECT media_id, play_count AS playcount, progress, storage_location, lastviewed
 FROM mediaserver.usermediaconsumption NATURAL JOIN mediaserver.mediaitem
 where username=%s AND progress != 100"""
 
