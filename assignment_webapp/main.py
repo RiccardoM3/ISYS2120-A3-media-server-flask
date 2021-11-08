@@ -4,7 +4,9 @@ from routes import *
 # Starting the python applicaiton
 if __name__ == '__main__':
     # Step 1: Change this port number if needed
+
     PORT_NUMBER = 5000
+
 
     print("-"*70)
     print("""Welcome to Media Server Backend.\n

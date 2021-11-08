@@ -946,7 +946,7 @@ def get_album_genres(album_id):
         # genres in an album (based on all the genres of the songs in that album)   #
         #############################################################################
         sql = """
-        SELECT DISTINCT md_value AS songgenres
+        SELECT DISTINCT md_value AS songgenres, m.md_id
         FROM mediaserver.album a
         	INNER JOIN mediaserver.album_songs s ON(a.album_id = s.album_id)
         	INNER JOIN mediaserver.audiomedia am ON(am.media_id = s.song_id)
@@ -1510,8 +1510,8 @@ def get_genre_info(genre_id):
         # Try executing the SQL and get from the database
         sql = """
         SELECT md_value, md_type_name
-        FROM metadata
-        INNER JOIN metadatatype USING (md_type_id)
+        FROM mediaserver.metadata
+        INNER JOIN mediaServer.metadatatype USING (md_type_id)
         WHERE md_id = %s
         AND md_type_name IN ('film genre', 'song genre', 'podcast genre')
         """
