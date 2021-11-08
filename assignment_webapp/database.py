@@ -867,12 +867,13 @@ def get_podcastep(podcastep_id):
         # podcast episodes and it's associated metadata                             #
         #############################################################################
         sql = """
-        SELECT pe.podcast_id, pe.media_id, pe.podcast_episode_title, pe.podcast_episode_uri, pe.podcast_episode_published_date,pe.podcast_episode_length,md.md_type_name, m.md_value
+        SELECT pe.podcast_id, pe.media_id, pe.podcast_episode_title, pe.podcast_episode_uri, pe.podcast_episode_published_date,pe.podcast_episode_length,md.md_type_name, m.md_value, mi.storage_location
         FROM mediaserver.podcastepisode pe
         		INNER JOIN mediaserver.audiomedia am ON(am.media_id = pe.media_id)
         		INNER JOIN mediaserver.mediaitemmetadata mid ON(mid.media_id = am.media_id)
         		INNER JOIN mediaserver.metadata m ON(mid.md_id = m.md_id)
         		INNER JOIN mediaserver.metadatatype md ON (m.md_type_id = md.md_type_id)
+                INNER JOIN mediaserver.mediaitem mi ON (am.media_id = mi.media_id)
         WHERE pe.media_id = %s
 
         """
@@ -1603,6 +1604,10 @@ def get_genre_info(genre_id):
 
 
 def get_progress(media_id, username):
+    """
+    Get the progress of a particular media item by a user. Ignores any progress which is 0 or 100%.
+    """
+
     conn = database_connect()
     if(conn is None):
         return None
@@ -1631,6 +1636,10 @@ def get_progress(media_id, username):
     return None
 
 def check_if_progress_exists(media_id, username):
+    """
+    Returns whether or not there exists a record of the progress of a particular media item by a user
+    """
+    
     conn = database_connect()
     if(conn is None):
         return None
@@ -1655,6 +1664,10 @@ def check_if_progress_exists(media_id, username):
     return False
 
 def save_progress(media_id, username, progress):
+    """
+    If a progress record of the media item already exists for the user, it is updated with the new progress
+    Otherwise a new progress record is created with the new progress.
+    """
 
     conn = database_connect()
     if(conn is None):
@@ -1672,8 +1685,6 @@ def save_progress(media_id, username, progress):
                     WHERE username= %s
                     AND media_id = %s
             """
-
-            print((progress, username, media_id))
 
             cur.execute(sql,(progress, username, media_id))
             conn.commit()

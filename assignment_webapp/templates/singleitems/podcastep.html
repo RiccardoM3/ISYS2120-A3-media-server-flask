@@ -13,7 +13,7 @@
             <br/>
             <h3>Player</h3>
             <div>
-                {% set url = podcastep[0].podcast_episode_uri %}
+                {% set url = podcastep[0].storage_location %}
                 {% if url != None %}
                     {% set element = 'audio' %}
                     {% include('player.html') %}
