@@ -8,5 +8,8 @@
     <div id="player-alert-{{id or 'video'}}" class="player-alert">
         Player Loading...
     </div>
-    <{{element or 'video'}} controls id="{{id or 'video'}}" src="{{ url }}" onloadeddata="player.init('{{id or 'video'}}', {{media_id or 'null'}}, '{{username or 'null'}}', {{progress or 'null'}}, {{save_interval or '5000'}})"></{{element or 'video'}}>
+    <{{element or 'video'}} id="{{id or 'video'}}" src="{{ url }}" controls
+        onloadeddata="player.init('{{id or 'video'}}', {{media_id or 'null'}}, '{{username or 'null'}}', {{progress or 'null'}}, {{save_interval or '5000'}})"
+        onerror="player.onError('{{id or 'video'}}')">
+    </{{element or 'video'}}>
 </div>

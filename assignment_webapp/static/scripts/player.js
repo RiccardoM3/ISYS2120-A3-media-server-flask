@@ -56,6 +56,12 @@ Player = function() {
         }
         return urlEncodedDataPairs.join("&")
     }
+
+    this.onError = function(id) {
+        let alert = document.getElementById('player-alert-'+id)
+        alert.innerHTML = "Error Occurred while loading media."
+        alert.classList.add('alert-danger')
+    }
 }
 
 player = new Player();

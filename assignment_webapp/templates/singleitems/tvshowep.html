@@ -7,7 +7,16 @@
             <br/>
             <h2 class="title"> Season {{tvshowep[0].season}}, Episode {{tvshowep[0].episode}} </h2>
             <br/>
-            
+            <h3>Player</h3>
+            <div>
+                {% set url = tvshowep[0].storage_location %}
+                {% if url != None %}
+                    {% set url = url_for('static', filename=url) %}
+                    {% set element = 'video' %}
+                    {% include('player.html') %}
+                {% endif %}
+            </div>
+            <br>
             <h3> Artworks </h3>
             {% for instance in tvshowep %}
                 {% if instance.md_type_name == 'artwork' %}

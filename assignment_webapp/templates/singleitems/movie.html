@@ -5,6 +5,16 @@
         {% if movie | length > 0 %}
             <h2 class="title"> {{movie[0].movie_title}} ({{movie[0].release_year}})</h2>
             <hr/>
+            <h3>Player</h3>
+            <div>
+                {% set url = movie[0].storage_location %}
+                {% if url != None %}
+                    {% set url = url_for('static', filename=url) %}
+                    {% set element = 'video' %}
+                    {% include('player.html') %}
+                {% endif %}
+            </div>
+            <br>
             <h3> Artworks </h3>
             {% for instance in movie %}
                 {% if instance.md_type_name == 'artwork' %}

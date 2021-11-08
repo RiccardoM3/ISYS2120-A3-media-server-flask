@@ -1234,6 +1234,7 @@ def get_tvshowep(tvshowep_id):
         from mediaserver.TVEpisode te left outer join
             (mediaserver.mediaitemmetadata natural join mediaserver.metadata natural join mediaserver.MetaDataType) temd
             on (te.media_id=temd.media_id)
+            inner join mediaserver.mediaitem ON (temd.media_id = mediaserver.mediaitem.media_id)
         where te.media_id = %s"""
 
         r = dictfetchall(cur,sql,(tvshowep_id,))
@@ -1270,6 +1271,7 @@ def get_movie(movie_id):
         from mediaserver.movie m left outer join
             (mediaserver.mediaitemmetadata natural join mediaserver.metadata natural join mediaserver.MetaDataType) mmd
         on (m.movie_id=mmd.media_id)
+        inner join mediaserver.mediaitem ON (mmd.media_id = mediaserver.mediaitem.media_id)
         where m.movie_id=%s;"""
 
         r = dictfetchall(cur,sql,(movie_id,))

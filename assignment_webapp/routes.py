@@ -486,7 +486,6 @@ def single_podcastep(media_id):
     if podcastep is None:
         podcastep = []
 
-    print(progress_info)
     # NOTE :: YOU WILL NEED TO MODIFY THIS TO PASS THE APPROPRIATE VARIABLES
     return render_template('singleitems/podcastep.html',
                            session=session,
@@ -515,17 +514,29 @@ def single_movie(movie_id):
     movie = None
     movie = database.get_movie(movie_id)
 
+    #if the user is logged in, get the progress info
+    progress_info = None
+    if(movie != None and 'logged_in' in session and session['logged_in']):
+        
+        progress_info = {
+            'media_id' : movie[0]['media_id'],
+            'username' : user_details['username']
+        }
+
+        progress_data = database.get_progress(movie[0]['media_id'], user_details['username']);
+        if progress_data:
+            progress_info['progress'] = progress_data[0]['progress']
 
     # Data integrity checks
     if movie == None:
         movie = []
 
-
     return render_template('singleitems/movie.html',
                            session=session,
                            page=page,
                            user=user_details,
-                           movie=movie)
+                           movie=movie,
+                           progress_info=progress_info)
 
 
 #####################################################
@@ -627,6 +638,18 @@ def single_tvshowep(tvshowep_id):
     tvshowep = None
     tvshowep = database.get_tvshowep(tvshowep_id)
 
+    #if the user is logged in, get the progress info
+    progress_info = None
+    if(tvshowep != None and 'logged_in' in session and session['logged_in']):
+        
+        progress_info = {
+            'media_id' : tvshowep[0]['media_id'],
+            'username' : user_details['username']
+        }
+
+        progress_data = database.get_progress(tvshowep[0]['media_id'], user_details['username']);
+        if progress_data:
+            progress_info['progress'] = progress_data[0]['progress']
 
     # Data integrity checks
     if tvshowep == None:
@@ -637,7 +660,8 @@ def single_tvshowep(tvshowep_id):
                            session=session,
                            page=page,
                            user=user_details,
-                           tvshowep=tvshowep)
+                           tvshowep=tvshowep,
+                           progress_info=progress_info)
 
 #####################################################
 #   Query (10)
